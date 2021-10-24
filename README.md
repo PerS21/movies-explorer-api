@@ -1,4 +1,5 @@
 # movies-explorer-api
+Адрес сервера - https://api.dpers.nomoredomains.monster/
 
 ## Директории
 

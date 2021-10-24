@@ -123,10 +123,6 @@ module.exports.login = (req, res, next) => {
           expiresIn: '1w',
         });
 
-        // res.cookie('jwt', token, {
-        //   maxAge: 3600000,
-        //   // domain: 'nomoredomains.monster',
-        // });
         res.status(200)
           .send({
             jwt: token,
