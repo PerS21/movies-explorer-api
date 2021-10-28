@@ -20,11 +20,10 @@ module.exports = (req, res, next) => {
     if (err) return next(new ParamsError('Ошибка токена'));
 
     req.user = {
-
       _id: decoded.id,
-
     };
+    return req;
   });
 
-  next();
+  return next();
 };

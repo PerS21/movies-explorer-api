@@ -9,14 +9,6 @@ const isMail = (value) => {
   throw new Error('URL validation err');
 };
 
-const isURL = (value) => {
-  const result = validator.isURL(value);
-  if (result) {
-    return value;
-  }
-  throw new Error('URL validation err');
-};
-
 const userSchema = new mongoose.Schema({
   name: {
     type: String,

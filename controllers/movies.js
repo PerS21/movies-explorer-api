@@ -1,6 +1,7 @@
 const Movie = require('../models/movie');
 const ErrorCreating = require('../utils/errors/errorCreating');
 const FoundError = require('../utils/errors/notFound');
+const NotEnoughRights = require('../utils/errors/notEnoughRights');
 
 module.exports.createMovie = (req, res, next) => {
   const {
@@ -33,25 +34,47 @@ module.exports.createMovie = (req, res, next) => {
     owner,
   })
     .then((newMovie) => {
-      res.status(200).send({ newMovie });
+      res.status(200).send({
+        newMovie,
+      });
     })
     .catch((error) => {
       if (error.name === 'CastError') {
         next(new ErrorCreating('Ошибка при создании'));
+      } else {
+        next(error);
       }
-      next(error);
     });
 };
 
 module.exports.deletMovie = (req, res, next) => {
-  Movie.findByIdAndRemove(req.params._id)
-    .then((movie) => {
-      if (movie) {
-        res.send({
-          message: 'Фильм удален',
-        });
+  const userId = req.user._id;
+  Movie.findById(req.params._id).then((movie) => {
+    if (movie) {
+      const movieOwner = movie.owner.toString();
+      if (userId === movieOwner) {
+        Movie.findByIdAndRemove(req.params._id)
+          .then((mov) => {
+            if (mov) {
+              res.send({
+                message: 'Фильм удален',
+              });
+            } else {
+              next(new FoundError('Фильм не найден'));
+            }
+          });
       } else {
-        next(new FoundError('Фильм не найден'));
+        next(new NotEnoughRights('Недостаточно прав'));
+      }
+    } else {
+      next(new FoundError('Фильм не найден'));
+    }
+  })
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        next(new FoundError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
     });
 };
@@ -68,5 +91,6 @@ module.exports.findMovies = (req, res, next) => {
     res.send({
       message: userMovie,
     });
+    return next();
   });
 };
