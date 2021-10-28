@@ -50,7 +50,7 @@ module.exports.findByIdAndUpdateUser = (req, res, next) => {
   })
     .catch((error) => {
       if (error.name === 'CastError') {
-        return next(new UpdateError('Ошибка при обновлении'));
+        next(new UpdateError('Ошибка при обновлении'));
       }
       if (error.name === 'ValidationError') {
         return next(new ValidationError('Ошибка запроса'));
@@ -77,41 +77,31 @@ module.exports.createUser = (req, res, next) => {
     email,
     password,
   } = req.body;
-
-  User.findOne({
-    email,
-  })
-    .then((user) => {
-      if (!validator.isEmail(email)) {
-        return next(new ErrorCreating('Невалидная почта'));
-      }
-      if (user) {
-        return next(new UserDuplicate('Пользователь с такой очтой уже существует'));
-      }
-      return bcrypt.hash(password, saltRounds, (err, hash) => {
-        if (err) return next(new ErrorCreating('Ошибка при создании'));
-        return User.create({
-          name,
-          email,
-          password: hash,
-        })
-          .then((userNew) => res.send({
-            data: {
-              name: userNew.name,
-              about: userNew.about,
-              avatar: userNew.avatar,
-              email: userNew.email,
-            },
-          }));
-      });
+  if (!validator.isEmail(email)) {
+    return next(new ErrorCreating('Невалидная почта'));
+  }
+  return bcrypt.hash(password, saltRounds, (err, hash) => {
+    if (err) return next(new ErrorCreating('Ошибка при создании'));
+    return User.create({
+      name,
+      email,
+      password: hash,
     })
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        next(new ErrorCreating('Ошибка при создании'));
-      } else {
-        next(error);
-      }
-    });
+      .then((userNew) => {
+        res.send({
+          data: {
+            name: userNew.name,
+            email: userNew.email,
+          },
+        });
+      })
+      .catch((error) => {
+        if (error.code === 11000) {
+          return next(new UserDuplicate('Пользователь с такой очтой уже существует'));
+        }
+        return next();
+      });
+  });
 };
 
 module.exports.login = (req, res, next) => {
