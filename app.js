@@ -10,7 +10,10 @@ const {
   requestLogger,
   errorLogger,
 } = require('./middlewares/logger');
-const { DATA_BASE, PORT } = require('./utils/ConfigEnv');
+const {
+  DATA_BASE,
+  PORT,
+} = require('./utils/ConfigEnv');
 
 const app = express();
 
@@ -21,7 +24,7 @@ app.use(express.json());
 app.use(requestLogger);
 
 const corsOptions = {
-  origin: ['*'],
+  origin: ['http://localhost:3000'],
   optionsSuccessStatus: 200,
   methods: ['GET,HEAD,PUT,PATCH,POST,DELETE'],
   credentials: true,

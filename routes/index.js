@@ -6,7 +6,10 @@ const {
   createUser,
 } = require('../controllers/users');
 const auth = require('../middlewares/auth');
-const { signupValidation, signinValidation } = require('../middlewares/validation');
+const {
+  signupValidation,
+  signinValidation,
+} = require('../middlewares/validation');
 
 const FoundError = require('../utils/errors/notFound');
 

@@ -34,9 +34,7 @@ module.exports.createMovie = (req, res, next) => {
     owner,
   })
     .then((newMovie) => {
-      res.status(200).send({
-        newMovie,
-      });
+      res.status(200).send(newMovie);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
@@ -60,14 +58,14 @@ module.exports.deletMovie = (req, res, next) => {
                 message: 'Фильм удален',
               });
             } else {
-              next(new FoundError('Фильм не найден'));
+              next(new FoundError('Фильм не найденвв'));
             }
           });
       } else {
         next(new NotEnoughRights('Недостаточно прав'));
       }
     } else {
-      next(new FoundError('Фильм не найден'));
+      next(new FoundError('Фильм не найден2'));
     }
   })
     .catch((err) => {
@@ -82,15 +80,9 @@ module.exports.deletMovie = (req, res, next) => {
 module.exports.findMovies = (req, res, next) => {
   const userId = req.user._id;
 
-  Movie.find().then((allMovies) => {
-    const userMovie = allMovies.filter((movie) => {
-      const movieOwner = movie.owner.toString();
-      const resalt = (movieOwner === userId);
-      return resalt;
-    });
-    res.send({
-      message: userMovie,
-    });
-    return next();
-  });
+  Movie.find({
+    userId,
+  })
+    .then((movies) => res.status(200).send(movies))
+    .catch(next);
 };
