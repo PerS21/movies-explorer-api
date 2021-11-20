@@ -3,7 +3,9 @@ const {
   findByIdAndUpdateUser,
   findById,
 } = require('../controllers/users');
-const { userUpdateValidation } = require('../middlewares/validation');
+const {
+  userUpdateValidation,
+} = require('../middlewares/validation');
 
 router.get('/users/me', findById);
 router.patch('/users/me', userUpdateValidation, findByIdAndUpdateUser);
