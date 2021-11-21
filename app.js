@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(requestLogger);
 
 const corsOptions = {
-  origin: ['http://localhost:3000'],
+  origin: ['http://localhost:3000', 'https://dpers.nomoredomains.monster/signin'],
   optionsSuccessStatus: 200,
   methods: ['GET,HEAD,PUT,PATCH,POST,DELETE'],
   credentials: true,
